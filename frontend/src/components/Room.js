@@ -18,8 +18,14 @@ export default class Room extends Component {
 
 getRoomDetails(){
     fetch('/get-room' + '?code=' + this.roomCode)
-    .then((response) => response.json()
-    ).then((data) => {
+    .then((response) => { 
+        if (!response.ok) {
+            this.props.leaveRoomCallback();
+            this.props.history.push('/')
+        }
+            return response.json() 
+        })
+        .then((data) => {
         this.setState({
             votesToSkip: data.votes_to_skip,
             guestCanPause: data.guest_can_pause,
@@ -36,6 +42,7 @@ leaveButtonPressed () {
     }
     fetch('/leave-room', requestOptions)
     .then((response) => {
+        this.props.leaveRoomCallback();
         this.props.history.push('/');
     })
 }
